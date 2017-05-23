@@ -1,0 +1,23 @@
+{% extends 'base.html' %}{% block content %}
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}" />
+
+<script src="{% static 'js/index-colors.js' %}"></script>
+<div class="container text-center" id="gradient">
+    <h2>Tests4all</h2>
+    
+    <div class="explain center-block">
+        La forma más simple y rápida de hacer tests y enviarlos a quien tu quieras.
+    </div>
+    <div class="explain explain2 center-block">
+        <div class="subexplain">
+            Quieres hacer tests?
+        </div>
+        <div class="subexplain">
+            O prefieres hacer encuestas?
+        </div>
+        <div class="subexplain center-block"></div>
+    </div>
+    
+</div>
+{% endblock %}

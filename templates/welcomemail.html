@@ -1,0 +1,40 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .button {
+            border: solid 2px #088a29;
+            border-radius: 5px;
+            padding: 0.5em;
+            background: #74df00;
+            margin-top: 1.5em;
+            font-weight: 800;
+            font-family: lucida sans unicode;
+            color: white;
+            text-decoration: none;
+        }
+        body {
+               padding: 2em;
+        }
+        #notes{
+            font-size: smaller;
+            margin-top: 3em;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>{{user.user.username}}, bienvenido a </h2>
+    <img src="cid:logo.png">
+    <p>
+        Ya estás más cerca de completar el proceso de registro y poder empezar a crear tus propios tests.<br>
+        Dale a este botón para poder completar el proceso de registro
+    </p>
+    <br>
+    <a class="button" href="https://miniprojecte-wijan.c9users.io{% url 'testsforall:confirmmail' hashlink user.id %}">Confirmar mail</a>
+    <p id="notes">*¿No has iniciado tú el proceso de registro en tests4all? Entonces ignora este correo, en un plazo de 3 días borraremos todos los datos relacionados con este correo</p>
+</body>
+
+</html>

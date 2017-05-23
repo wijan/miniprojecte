@@ -1,0 +1,437 @@
+
+{% extends 'base.html' %}
+{% load jfutags %}
+{% block content %}
+<div class="container">
+    
+    <h2>Crear test</h2>
+    <h3>Añadir imagenes</h3>
+    <a href="#" data-toggle="modal" data-target="#imagesUploaderModal" class="btn btn-info col-xs-3">
+                <i class="fa fa-pencil"></i> Subir imágenes
+    </a>
+    <div class="container col-xs-12" id="surveydiv">
+        <form method="post" >
+            <div class="form-group" id="selectsurvey">
+                <label for="typersurvey">¿Qué tipo de test quieres hacer?</label><br>
+                <select name="typetest" id="typesurvey">
+                    <option value="normal" selected>Normal</option>
+                    <option value="minus">Restando puntos</option>
+                </select>
+            </div>
+        {% csrf_token %}
+        <div id="title" class="col-xs-12">
+            <input type="hidden" name="totalquestions" id="totalquestions" value="1">
+            <h2>Título</h2>
+            <i class="fa fa-pencil"></i> <input name="surveytitle" id="surveytitle" class="titleinput" size="30" type="text" placeholder="Título del test">
+            <div class="clearfix"></div>
+            <h4 class="imgquestiontitlenotselected">Imágen seleccionada</h4>
+            <input type="hidden" id="inputimgsurvey" name="inputimgsurvey">
+            <a id="imgSurvey" href="#">
+                <img class="surveyimg">    
+            </a> 
+            <div class="clearfix"></div>
+            <a href="#" data-surveybutton="1" data-toggle="modal" data-target="#imagesSelectorModal" id="imageselectbtnsurvey" class="btn btn-info col-xs-7">
+                <i class="fa fa-pencil"></i> Seleccionar imagen
+            </a>
+            <div class="clearfix"></div>
+            <label id="labelrules" for="rules">Indica las normas del test</label>
+            <textarea class="form-control" rows="5" id="comment" name="rules"></textarea>
+            
+        </div>
+        <div class="col-xs-12" id="questionzone">
+            
+            <div class="question col-xs-10" data-nanswer="0">
+                <input type="hidden" class="totalanswersquestion" id="totalanswers1" name="totalanswers1" value="0">
+                <button type="button" class="btn btn-danger deletequestion"><i class="fa fa-trash"></i> Eliminar pregunta</button>
+                <h3 class="nquestion">Pregunta 1:</h3>
+                <div class="form-group" id="pointsperquestion1">
+                    <label for="pointsperquestioninput1">¿Cuantos puntos cuenta esta pregunta?</label><br>
+                    <input type="number" step=".01" name="pointsperquestioninput1" id="pointsperquestioninput1">
+                </div>
+                <div class="howminus collapse" id="howminus1">
+                    <label for="howminusinput1">¿Cuantos puntos resta esta pregunta si es errónea?</label><br>
+                    <input type="number" step=".01" name="howminusinput1" id="howminusinput1">
+                </div>
+                <h4 class="imgquestiontitlenotselected">Imágen seleccionada</h4>
+                <input type="hidden" name="inputimgquestion1" id="inputimgquestion1">
+                <a id="imgQuestion1" href="#">
+                    <img class="questionimg">
+                </a>
+                <div class="clearfix"></div>
+                <div>
+                    <a href="#" id="imageselectbtnquestion1" data-questionbutton="1" data-toggle="modal" data-target="#imagesSelectorModal" class="btn btn-info col-xs-3">
+                        <i class="fa fa-pencil"></i> Seleccionar imagen
+                    </a>
+                </div>
+                <div class="clearfix"></div>
+                <input id="tq1" name="tq1" class="titleinput questiontitle" type="text" size="60" placeholder="Título de la pregunta">
+                <div class="clearfix"></div>
+                <div class="form-group collapse" id="correctanswer1div">
+                    <label for="correctanswer1">¿Cuál es la respuesta correcta?</label><br>
+                    <select name="correctanswer1" id="correctanswer1">
+                    </select>
+                </div>
+                <button type="button" data-nquestion="1" id="addanswer1" class="addanswer btn btn-success"><i class="fa fa-plus-square"></i> Añadir respuesta</button>
+            </div>
+        </div>
+        
+        <div class="published">
+            <input type="hidden" id="published" name="published" value="0">
+            Quieres publicar el test?
+            <div class="buttonpublishedno" id="buttonpublished">
+                <div class="stylebuttonno" id="stylebutton">No</div>
+            </div>
+        </div>
+        <div id="endsurvey" class="col-xs-12">
+            <button type="button" id="addquestion" class="btn btn-success"><i class="fa fa-plus-square"></i> Añadir pregunta</button>
+            <button id="submit" type="submit" class="btn btn-info"><i class="fa fa-save"></i> Guardar test</button>
+        </div>
+        </form>
+        
+        
+    </div>
+</div>
+
+<div id="imagesUploaderModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content col-xs-12">
+            <div class="modal-header col-xs-12">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Subir imágenes</h4>
+            </div>
+            <div class="modal-body text-center col-xs-12">
+            {% jfu 'testsforall/upload.html' 'testsforall:jfu_upload'%}
+            </div>
+            <div class="modal-footer col-xs-12">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="imagesSelectorModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content col-xs-12">
+            <div class="modal-header col-xs-12">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Seleccionar imagen</h4>
+            </div>
+            <div class="modal-body text-center col-xs-12">
+                {% if images|length > 0 %}
+                <div id="selectImage" data-haveimg="1">
+                        {% for image in images %}
+                        <label id="label{{image.id}}" class="labelselect">
+                            <input type="radio" name="questionImages" value="{{ image.id }}">{{ image.id }}
+                            <img src = "media/{{ image.image }}" class = "imageselection">
+                        </label>
+                        {% endfor %}
+                </div>
+                {% else %}
+                <div id="selectImage" data-haveimg="0">
+                    Aún no hay imágenes súbidas
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer col-xs-12">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        var nquestion = 2; 
+        var totalrealquestions = 2;
+        var addedquestion = false;
+        
+        $('#buttonpublished').click(function(){
+            var stylebutton = $('#stylebutton');
+            if($(this).hasClass('buttonpublishedno')){
+                $('#published').val('1');
+                $(this).removeClass('buttonpublishedno')
+                $(this).addClass('buttonpublishedyes')
+                
+                stylebutton.css('position', 'relative').animate({ left: $(this).width() - stylebutton.width(),
+                                                                borderTopLeftRadius: 5, 
+                                                                borderTopRightRadius: 0, 
+                                                                borderBottomLeftRadius: 5, 
+                                                                borderBottomRightRadius: 0
+                });
+                stylebutton.text('Sí');
+            }
+            else{
+                $('#published').val('0');
+                $(this).removeClass('buttonpublishedyes')
+                $(this).addClass('buttonpublishedno')
+                stylebutton.animate({ left:0, 
+                                        borderTopLeftRadius: 0, 
+                                        borderTopRightRadius: 5, 
+                                        borderBottomLeftRadius: 0, 
+                                        borderBottomRightRadius: 5});
+                stylebutton.text('No');
+            }
+        });
+        
+        
+        function questionImageSelectorChange(questionselection){
+            questionImageSelector = questionselection;
+        }
+        
+        $('#imageselectbtnsurvey').click(function(){
+            imgSelectionType = 'survey';
+            console.log(imgSelectionType);
+            questionImageSelectorChange($(this).data('surveybutton'));
+        });
+        
+        $('#imageselectbtnquestion1').click(function(){
+            imgSelectionType = 'question';
+            console.log(imgSelectionType);
+            questionImageSelectorChange($(this).data('questionbutton'));
+        });
+        
+        $('#typesurvey').change(function(){
+            var valueselected = $('#typesurvey option:selected').val()
+            if(valueselected == "minus"){
+                $('.howminus').css('visibility','visible').hide().fadeIn().removeClass('hidden');
+            }
+            else{
+                $('.howminus').fadeOut();
+            }
+        });
+    
+        
+        
+        $('.labelselect').click(function(){
+            changeImage($(this));
+        });
+        
+        
+        $('#addquestion').click(function(){
+            var nquestionstring = nquestion.toString();
+            var totalrealquestionsstring = totalrealquestions.toString();
+            var valueselected = $('#typesurvey option:selected').val()
+            var question;
+            if(valueselected == 'normal'){
+                var question = "<div class='question col-xs-10' data-nanswer='0'>"+
+                                "<input type='hidden' class='totalanswersquestion' id='totalanswers"+nquestionstring+"' name='totalanswers"+nquestionstring+"' value='0'>"+
+                                "<button type='button' class='btn btn-danger deletequestion'><i class='fa fa-trash'></i> Eliminar pregunta</button>"+
+                                "<h3 class='nquestion'>Pregunta "+totalrealquestionsstring+":</h3>"+
+                                "<div class='form-group collapse' id='correctanswer"+nquestionstring+"div'>"+
+                                "<label for='correctanswer"+nquestionstring+"'>¿Cuál es la respuesta correcta?</label><br>"+
+                                "<select name='correctanswer"+nquestionstring+"' id='correctanswer"+nquestionstring+"'>"+
+                                "</select>"+
+                                "</div>"+
+                                "<div class='howminus collapse' id='howminus"+nquestionstring+"'>"+
+                                "<label for='howminusinput"+nquestionstring+"'>¿Cuantos puntos resta esta pregunta si es errónea?</label><br>"+
+                                "<input type='number' step='.01' name='howminusinput"+nquestionstring+"' id='howminusinput"+nquestionstring+"'>"+
+                                "</div>"+
+                                "<div class='form-group' id='pointsperquestion"+nquestionstring+"'>"+
+                                "<label for='pointsperquestioninput"+nquestionstring+"'>¿Cuantos puntos cuenta esta pregunta?</label><br>"+
+                                "<input type='number' step='.01' name='pointsperquestioninput"+nquestionstring+"' id='pointsperquestioninput"+nquestionstring+"'>"+
+                                "</div>"+
+                                "<h4 class='imgquestiontitlenotselected'>Imágen seleccionada</h4>"+
+                                "<input type='hidden' id='inputimgquestion"+nquestionstring+"' name='inputimgquestion"+nquestionstring+"'>"+
+                                "<a id='imgQuestion"+nquestionstring+"' href='#'>"+
+                                "<img class='questionimg'>"+    
+                                "</a>"+ 
+                                "<div class='clearfix'></div>"+
+                                "<a href='#' data-questionbutton='"+nquestionstring+"' data-toggle='modal' data-target='#imagesSelectorModal' id='imageselectbtnquestion"+nquestionstring+"' class='btn btn-info col-xs-3'>"+
+                                "<i class='fa fa-pencil'></i> Seleccionar imagen"+
+                                "</a>"+
+                                "<div class='clearfix'></div>"+
+                                "<input id='tq"+nquestionstring+"' name='tq"+nquestionstring+"' class='titleinput questiontitle' type='text' size='60' placeholder='Título de la pregunta'>"+
+                                "<div class='clearfix'></div>"+
+                                "<button type='button' data-nquestion='"+nquestionstring+"' id='addanswer"+nquestionstring+"' class='addanswer btn btn-success'><i class='fa fa-plus-square'></i> Añadir respuesta</button>"+ 
+                            "</div>";
+            }
+            else{
+                var question = "<div class='question col-xs-10' data-nanswer='0'>"+
+                                "<input type='hidden' class='totalanswersquestion' id='totalanswers"+nquestionstring+"' name='totalanswers"+nquestionstring+"' value='0'>"+
+                                "<button type='button' class='btn btn-danger deletequestion'><i class='fa fa-trash'></i> Eliminar pregunta</button>"+
+                                "<h3 class='nquestion'>Pregunta "+totalrealquestionsstring+":</h3>"+
+                                "<div class='form-group collapse' id='correctanswer"+nquestionstring+"div'>"+
+                                "<label for='correctanswer"+nquestionstring+"'>¿Cuál es la respuesta correcta?</label><br>"+
+                                "<select name='correctanswer"+nquestionstring+"' id='correctanswer"+nquestionstring+"'>"+
+                                "</select>"+
+                                "</div>"+
+                                "<div class='howminus' id='howminus"+nquestionstring+"'>"+
+                                "<label for='howminusinput"+nquestionstring+"'>¿Cuantos puntos resta esta pregunta si es errónea?</label><br>"+
+                                "<input type='number' step='.01' name='howminusinput"+nquestionstring+"' id='howminusinput"+nquestionstring+"'>"+
+                                "</div>"+
+                                "<div class='form-group' id='pointsperquestion"+nquestionstring+"'>"+
+                                "<label for='pointsperquestioninput"+nquestionstring+"'>¿Cuantos puntos cuenta esta pregunta?</label><br>"+
+                                "<input type='number' step='.01' name='pointsperquestioninput"+nquestionstring+"' id='pointsperquestioninput"+nquestionstring+"'>"+
+                                "</div>"+
+                                "<h4 class='imgquestiontitlenotselected'>Imágen seleccionada</h4>"+
+                                "<input type='hidden' id='inputimgquestion"+nquestionstring+"' name='inputimgquestion"+nquestionstring+"'>"+
+                                "<a id='imgQuestion"+nquestionstring+"' href='#'>"+
+                                "<img class='questionimg'>"+    
+                                "</a>"+ 
+                                "<div class='clearfix'></div>"+
+                                "<a href='#' data-questionbutton='"+nquestionstring+"' data-toggle='modal' data-target='#imagesSelectorModal' id='imageselectbtnquestion"+nquestionstring+"' class='btn btn-info col-xs-3'>"+
+                                "<i class='fa fa-pencil'></i> Seleccionar imagen"+
+                                "</a>"+
+                                "<div class='clearfix'></div>"+
+                                "<input id='tq"+nquestionstring+"' name='tq"+nquestionstring+"' class='titleinput questiontitle' type='text' size='60' placeholder='Título de la pregunta'>"+
+                                "<div class='clearfix'></div>"+
+                                "<button type='button' data-nquestion='"+nquestionstring+"' id='addanswer"+nquestionstring+"' class='addanswer btn btn-success'><i class='fa fa-plus-square'></i> Añadir respuesta</button>"+ 
+                            "</div>";
+            }
+            
+            var questionzone = $('#questionzone');
+            questionzone.append(question);
+            nquestion++;
+            totalrealquestions++;
+            
+            $('#addanswer'+nquestionstring).click(function(){
+                addanswer($(this));
+                addedquestion = false;
+            });
+            
+            $('.deletequestion').click(function(){
+                var questiondelete = $(this).parent();
+                questiondelete.fadeOut('slow').promise().done(function() {
+                    questiondelete.remove();
+                    var questions = $('.question');
+                    var newnquestion = 1;
+                    questions.each(function(){
+                        $(this).find('.nquestion').text('Pregunta '+newnquestion+':');
+                        newnquestion++;
+                    });
+                    totalrealquestions = newnquestion;
+                });
+            });
+            
+            $('#imageselectbtnquestion'+nquestionstring).click(function(){
+                imgSelectionType = 'question';
+                console.log(imgSelectionType);
+                questionImageSelectorChange($(this).data('questionbutton'));
+            });
+            
+            $('#totalquestions').val(nquestion-1);
+        });
+        
+        $('#addanswer1').click(function(event){
+            addanswer($(this));
+        });
+        
+        function addanswer(element){
+            var question = element.parent();
+            var nanswer = question.data("nanswer");
+            nanswer++;
+            var toAppend;
+            if(nanswer == 1){
+                toAppend = element.siblings('.questiontitle');
+            }
+            else{
+                toAppend = element.siblings('.last_answer');
+                element.siblings('.last_answer').removeClass('last_answer');
+            }
+            var nquestion = element.data('nquestion');
+            var totalanswersinput = question.find('#totalanswers'+nquestion);
+            totalanswersinput.val(parseInt(totalanswersinput.val())+1);
+            answerhtml = '<div class="answer col-xs-5 last_answer">'+
+                    '<h4 class="answertitle">Respuesta '+nanswer+':</h4>'+
+                    '<h4 class="imgquestiontitlenotselected">Imágen seleccionada</h4>'+
+                                '<input type="hidden" id="inputimganswer'+nquestion+'_'+nanswer+'" name="inputimganswer'+nquestion+'_'+nanswer+'">'+
+                                '<a id="imgAnswer'+nquestion+'_'+nanswer+'" href="#">'+
+                                '<img class="answerimg">'+    
+                                '</a>'+ 
+                                '<div class="clearfix"></div>'+
+                                '<a href="#" data-answerbutton="'+nquestion+'_'+nanswer+'" data-toggle="modal" data-target="#imagesSelectorModal" id="imageselectbtnanswer'+nquestion+'_'+nanswer+'" class="btn btn-info col-xs-7">'+
+                                '<i class="fa fa-pencil"></i> Seleccionar imagen'+
+                                '</a>'+
+                    '<input id="answer'+nquestion+'_'+nanswer+'" name="answer'+nquestion+'_'+nanswer+'" type="text" class="col-xs-10 answertext">'+
+                '</div>';
+            if(nanswer%2==1){
+                toAppend.after('<div class="clearfix"></div>'+answerhtml);
+            }
+            else{
+                toAppend.after(answerhtml);
+            }
+            
+            question.data("nanswer", nanswer);
+            
+            $('#imageselectbtnanswer'+nquestion+'_'+nanswer).click(function(){
+                imgSelectionType = 'answer';
+                console.log(imgSelectionType);
+                answerImageSelector = nquestion+'_'+nanswer;
+                console.log(answerImageSelector);
+                questionImageSelectorChange($(this).data('questionbutton'));
+            });
+            
+            var selectcorrect = question.find('#correctanswer'+nquestion);
+            var option = "<option value='"+nanswer+"'>Respuesta "+nanswer+"</option>";
+            selectcorrect.append(option);
+            var divcorrect = selectcorrect.parent();
+            if(divcorrect.hasClass('collapse')){
+                divcorrect.css('visibility','visible').hide().fadeIn().removeClass('collapse');
+            }
+            
+        }
+        
+        $(window).keydown(function(event){
+            if(event.keyCode == 13) {
+                event.preventDefault();
+                return false;
+            }
+        });
+    });
+    
+    var questionImageSelector = 0;
+    var imgSelectionType;
+    var answerImageSelector;
+    
+    
+    
+    function changeImage(element) {
+        var fileid = element.find('input').first().val();
+        var srcimg = element.find('img').attr('src');
+        console.log(fileid+', '+srcimg);
+        if (imgSelectionType == "question") {
+            var linkimg = $('#imgQuestion' + questionImageSelector);
+            linkimg.siblings('#inputimgquestion' + questionImageSelector).val(fileid);
+        }
+        else if(imgSelectionType == "answer") {
+            var linkimg = $('#imgAnswer'+answerImageSelector);
+            linkimg.siblings('#inputimganswer' + answerImageSelector).val(fileid);
+        }
+        else if(imgSelectionType == "survey") {
+            var linkimg = $('#imgSurvey');
+            linkimg.siblings('#inputimgsurvey').val(fileid);
+        }
+        var img = linkimg.find('img');
+        if (img.hasClass('imagereduced')) {
+            img.removeClass('imagereduced');
+        }
+        linkimg.attr('href', 'https://miniprojecte-wijan.c9users.io/' + srcimg).attr('target', '_blank').siblings('.imgquestiontitlenotselected').removeClass('imgquestiontitlenotselected');
+        img.attr('src', srcimg);
+        if (img.width() > $('.question').first().width() / 2) {
+            img.addClass('imagereduced');
+        }
+        
+    
+    }
+    
+    function finished (e, data) {
+        $.each(data.files, function (index, file) {
+        var fileid = $('#fileupload').find('.files').find('td').last().find('button').data('url').split('/').slice(-1);
+        var imgpath = $('#fileupload').find('.files').find('td').first().find('img').attr('src');
+        $('#selectImage').find('.labelselect').last().after(
+                "<label id='label"+fileid+"' class='labelselect'>"+
+                    "<input type='radio' name='questionImages' value='"+fileid+"'>"+fileid+
+                            "<img src = '"+imgpath+"' class = 'imageselection'>"+
+                        "</label>"
+            );
+        $('#label'+fileid).click(function(){
+            changeImage($(this));
+        })
+    });
+    }
+    
+    $('#fileupload')
+    .bind('fileuploadcompleted', finished);
+</script>
+{% endblock %}

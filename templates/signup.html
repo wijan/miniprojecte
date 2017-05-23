@@ -1,0 +1,168 @@
+{% extends 'base.html' %} {% block content %}
+<h2>Registro</h2>
+<p>Bienvenido a Tests4all completa el siguiente formulario para poder empezar a crear tus tests</p>
+<form method="post" id="signupform">
+  {% csrf_token %}
+  <div class="col-xs-12 col-sm-6 signupfield">
+    <label for="username">Indica el nombre de usuario deseado</label>
+    <div class="inner-addon left-addon">
+      <i class="glyphicon glyphicon-user"></i>
+      <input type="text" id="username" name="username" class="form-control" />
+    </div>
+  </div>
+  <div class="col-xs-12 col-sm-6 signupfield">
+    <label for="email">Indica tu e-mail</label>
+    <div class="inner-addon left-addon">
+      <i class="fa fa-envelope-o"></i>
+      <input type="email" id="email" name="email" class="form-control" />
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <div class="col-xs-12 col-sm-6 signupfield">
+    <label for="password">Contraseña deseada</label>
+    <div class="inner-addon left-addon">
+      <i class="fa fa-key"></i>
+      <input type="password" id="password" name="password" class="form-control" />
+    </div>
+  </div>
+  <div class="col-xs-12 col-sm-6 signupfield">
+    <label for="password2">Confirma la contraseña</label>
+    <div class="inner-addon left-addon">
+      <i class="fa fa-key"></i>
+      <input type="password" id="password2" name="password2" class="form-control" />
+    </div>
+  </div>
+  <button type="button" id="submitsignup" class="btn btn-success">Sign up</button>
+</form>
+<div class="collapse alert alert-danger" id="notfullform">
+  El formulario no està completo
+</div>
+<div class="collapse alert alert-danger col-xs-8" id="infousername">
+  Ya existe este usuario
+</div>
+<div class="collapse alert alert-danger col-xs-8" id="infomail">
+  Ya existe un usuario que ha usado este correo electrónico
+</div>
+<div class="collapse alert alert-danger" id="passwordwrong">
+  Las contraseñas no coinciden.
+</div>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+  $(document).ready(function(){
+    var formok = true;
+    $('#submitsignup').click(function(event){
+      usernameExists();
+      mailExists();
+      if(!formFull()){
+        formok = false;
+        $('#notfullform').css('visibility','visible').hide().fadeIn().removeClass('hidden');
+        setTimeout(hideNotFullForm, 4000);
+      }
+      if(!checkPassword()){
+        formok = false;
+        $('#passwordwrong').css('visibility','visible').hide().fadeIn().removeClass('hidden');
+        setTimeout(hideWrongPassword, 4000);
+      }
+      if(formok){
+        $('#signupform').submit();
+      }
+      formok = true;
+    });
+    
+    
+    function usernameExists() {
+      var username = $('#username').val();
+      var token = $("input[name=csrfmiddlewaretoken]").val();
+      $.ajax({
+        async: false,
+        type: 'POST',
+        url: "{% url 'testsforall:checkuser' %}",
+        data: {
+          'csrfmiddlewaretoken': token,
+          'username': username,
+        },
+        success: function(data) {
+          if (data[0].userexists) {
+            formok = false;
+            $('#infousername').css('visibility', 'visible').hide().fadeIn().removeClass('hidden');
+            setTimeout(hideInfousername, 4000);
+          }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+          alert('Ha habido algun problema al consultar el username');
+          console.log(xhr.status);
+          console.log(thrownError);
+        }
+      });
+    }
+    
+    function mailExists() {
+      var mail = $('#email').val();
+      var token = $("input[name=csrfmiddlewaretoken]").val();
+      $.ajax({
+        async: false,
+        type: 'POST',
+        url: "{% url 'testsforall:checkmail' %}",
+        data: {
+          'csrfmiddlewaretoken': token,
+          'mail': mail,
+        },
+        success: function(data) {
+          if (data[0].mailexists) {
+            formok = false;
+            $('#infomail').css('visibility', 'visible').hide().fadeIn().removeClass('hidden');
+            setTimeout(hideInfomail, 4000);
+          }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+          alert('Ha habido algun problema al consultar el username');
+          console.log(xhr.status);
+          console.log(thrownError);
+        }
+      });
+    }
+    
+    function formFull(){
+      var username = $('#username').val();
+      var email = $('#email').val();
+      var password = $('#password').val();
+      var password2 = $('#password2').val();
+      if(username == ''){
+        return false;
+      }
+      else if(email == ''){
+        return false;
+      }
+      else if(password == ''){
+        return false;
+      }
+      else if(password2 == ''){
+        return false;
+      }
+      else{
+        return true;
+      }
+    }
+    function checkPassword(){
+      var password = $('#password').val();
+      var password2 = $('#password2').val();
+      return password == password2;
+    }
+    
+    function hideInfousername(){
+      $('#infousername').fadeOut();
+    }
+    
+    function hideInfomail(){
+      $('#infomail').fadeOut();
+    }
+    
+    function hideWrongPassword(){
+      $('#passwordwrong').fadeOut();
+    }
+    function hideNotFullForm(){
+      $('#notfullform').fadeOut();
+    }
+  });  
+</script>
+{% endblock %}

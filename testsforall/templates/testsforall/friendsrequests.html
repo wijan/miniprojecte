@@ -1,0 +1,139 @@
+{% extends 'base.html' %}{% block content %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+var app = angular.module('myFriendRequests', ['angularUtils.directives.dirPagination']);
+    
+    
+    app.config(function($interpolateProvider) {
+      $interpolateProvider.startSymbol('[[');
+      $interpolateProvider.endSymbol(']]');
+    });
+    
+    app.controller('requests', function($scope, $http) {
+        $http({
+            method: 'GET',
+            url: 'http://miniprojecte-wijan.c9users.io/getfriendrequests'
+        }).then(function successCallback(response) {
+            // this callback will be called asynchronously
+            // when the response is available
+            $scope.requests = response.data;
+        }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                alert(response);
+            
+        });
+        
+        $scope.acceptFriend = function(requestid) {
+            var button = $('.addfriend[data-requestid="'+requestid+'"]');
+            var token = $("input[name=csrfmiddlewaretoken]").val();
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'testsforall:acceptFriend' %}",
+                data: {
+                    'csrfmiddlewaretoken': token,
+                    'requestid': requestid,
+                },
+                success: function(msg) {
+                    var returndata = msg[0].msg;
+                    $('#infoajax').text(returndata);
+                    $('#infoAjaxModal').modal('show');
+                    var parent = button.parent();
+                    button.toggle();
+                    button.siblings('.rejectFriend').first().toggle();
+                    parent.text('Amistad aceptada');
+                    //alert(msg.msg);
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    alert('Ha habido algun problema al enviar la solicitud de amistad');
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+        }
+        
+        $scope.sort = function(keyname){
+            $scope.sortKey = keyname;   //set the sortKey to the param passed
+            $scope.reverse = !$scope.reverse; //if true make it false and vice versa
+        };
+    
+    });
+    
+</script>
+<div class="container" ng-app="myFriendRequests" ng-controller="requests">
+    {% csrf_token %}
+    <h2>Solicitudes de amistad</h2>
+    <form class="form-inline">
+        <div class="form-group">
+            <label >Buscador</label>
+            <input type="text" ng-model="search" class="form-control" placeholder="Introduce la solicitud a buscar">
+        </div>
+    </form>
+    
+    <!--
+    <thead>
+        <tr>
+            <th ng-click="sort('id')">Id</th>
+            <th ng-click="sort('first_name')">First Name</th>
+            <th ng-click="sort('last_name')">Last Name</th>
+            <th ng-click="sort('hobby')">Hobby</th>
+        </tr>
+    </thead>
+    -->
+    <table id="myrequests" class="table-hover table-bordered table col-sm-12">
+        <thead>
+            <tr>
+                <td ng-click="sort('petitioner')">
+                    Usuario
+                    <span class="glyphicon sort-icon" ng-show="sortKey=='usuario'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                </td>
+                <td ng-click="sort('daterequest')">
+                    Fecha de solicitud
+                    <span class="glyphicon sort-icon" ng-show="sortKey=='daterequest'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                </td>
+                <td>Acciones</td>
+            </tr>
+
+        </thead>
+        <tr dir-paginate="request in requests|orderBy:sortKey:reverse|filter:search|itemsPerPage:10">
+            <td>
+                <a href="user/[[request.petitionerid]]">[[ request.petitioner ]]</a>
+            </td>
+            <td>
+                [[request.daterequest]]
+            </td>
+            <td>
+                <a class="btn accion btn-success" data-requestid = "[[request.requestid]]" ng-click="acceptFriend(request.requestid)"><i class="fa fa-plus-square"></i> Aceptar</button>
+                <a class="btn accion btn-danger" data-requestid = "[[request.requestid]]" ng-click="rejectFriend(request.requestid)"><i class="fa fa-remove"></i> Rechazar</button>
+            </td>
+        </tr>
+
+    </table>
+    <div ng-hide="requests.length">No tienes solicitudes de amistad</div>
+    <dir-pagination-controls
+       max-size="10"
+       direction-links="true"
+       boundary-links="true" >
+    </dir-pagination-controls>
+
+</div>
+<div id="infoAjaxModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content col-xs-12">
+            <div class="modal-header col-xs-12">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Solicitud de amistad aceptada</h4>
+            </div>
+            <div id="infoajax" class="modal-body text-center col-xs-12">
+            
+            </div>
+            <div class="modal-footer col-xs-12">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends 'base.html' %}{% block content %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+    var app = angular.module('myFriends', ['angularUtils.directives.dirPagination']);
+
+
+    app.config(function($interpolateProvider) {
+        $interpolateProvider.startSymbol('[[');
+        $interpolateProvider.endSymbol(']]');
+    });
+
+    app.controller('friends', function($scope, $http) {
+        $http({
+            method: 'GET',
+            url: 'http://miniprojecte-wijan.c9users.io/getfriends'
+        }).then(function successCallback(response) {
+            // this callback will be called asynchronously
+            // when the response is available
+            $scope.friends = response.data;
+        }, function errorCallback(response) {
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+            alert(response);
+
+        });
+
+        $scope.sort = function(keyname) {
+            $scope.sortKey = keyname; //set the sortKey to the param passed
+            $scope.reverse = !$scope.reverse; //if true make it false and vice versa
+        };
+    });
+
+    app.controller('searchfriends', function($scope, $http) {
+        $http({
+            method: 'GET',
+            url: 'http://miniprojecte-wijan.c9users.io/getusers'
+        }).then(function successCallback(response) {
+            $scope.userstoadd = response.data;
+        }, function errorCallback(response) {
+            alert(response);
+        });
+        $scope.sendFriendRequest = function(requested) {
+            var idrequested = requested;
+            var button = $('.addfriend[data-iduser="'+idrequested+'"]');
+            var token = $("input[name=csrfmiddlewaretoken]").val();
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'testsforall:sendFriendRequest' %}",
+                data: {
+                    'csrfmiddlewaretoken': token,
+                    'requested': idrequested,
+                },
+                success: function(msg) {
+                    var returndata = msg[0].msg;
+                    $('#infoajax').text(returndata);
+                    $('#infoAjaxModal').modal('show');
+                    var parent = button.parent();
+                    button.toggle();
+                    parent.text('Solicitud enviada');
+                    //alert(msg.msg);
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    alert('Ha habido algun problema al enviar la solicitud de amistad');
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+        }
+
+        $scope.sort = function(keyname) {
+            $scope.sortKey = keyname; //set the sortKey to the param passed
+            $scope.reverse = !$scope.reverse; //if true make it false and vice versa
+        };
+    });
+</script>
+
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#myFriends" aria-controls="home" role="tab" data-toggle="tab"><i class="fa fa-user-circle"></i> Mis amigos</a></li>
+    <li role="presentation"><a href="#addfriends" aria-controls="profile" role="tab" data-toggle="tab"><i class="fa fa-user-plus"></i> Buscador de amigos</a></li>
+    <li role="presentation"><a href="#groups" aria-controls="messages" role="tab" data-toggle="tab"><i class="fa fa-users"></i> Grupos</a></li>
+</ul>
+<div class="tab-content" ng-app="myFriends">
+    <div role="tabpanel" class="tab-pane active" id="myFriends">
+        <div class="container" ng-controller="friends">
+            <h2>Amigos</h2>
+            {% csrf_token %}
+            <form class="form-inline">
+                <div class="form-group">
+                    <label>Buscador</label>
+                    <input type="text" ng-model="search" class="form-control" placeholder="Introduce el amigo a buscar">
+                </div>
+            </form>
+
+            <!--
+    <thead>
+        <tr>
+            <th ng-click="sort('id')">Id</th>
+            <th ng-click="sort('first_name')">First Name</th>
+            <th ng-click="sort('last_name')">Last Name</th>
+            <th ng-click="sort('hobby')">Hobby</th>
+        </tr>
+    </thead>
+    -->
+            <table id="myfriends" class="table-hover table-bordered table col-sm-12" >
+                <thead>
+                    <tr>
+                        <td ng-click="sort('username')">
+                            Usuario
+                            <span class="glyphicon sort-icon" ng-show="sortKey=='username'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                        </td>
+                        <td ng-click="sort('datefriends)">
+                            Amigos desde
+                            <span class="glyphicon sort-icon" ng-show="sortKey=='datefriends'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                        </td>
+                        <td ng-click="sort('dateuser')">
+                            En tests4all desde
+                            <span class="glyphicon sort-icon" ng-show="sortKey=='dateuser'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                        </td>
+                        <td>Acciones</td>
+                    </tr>
+
+                </thead>
+                <tr dir-paginate="friend in friends|orderBy:sortKey:reverse|filter:search|itemsPerPage:10">
+                    <td>
+                        <a href="user/[[friend.id]]">[[ friend.username ]]</a>
+                    </td>
+                    <td>
+                        [[friend.datefriends]]
+                    </td>
+                    <td>
+                        [[friend.dateuser]]
+                    </td>
+                    <td>
+                        <a class="btn accion btn-danger" href="deleteSurvey/[[survey.id]]"><i class="fa fa-trash"></i> Eliminar amigo</button>
+                    </td>
+                </tr>
+            </table>
+            <div ng-hide="friends.length">Aún no tienes amigos</div>
+            <dir-pagination-controls
+               max-size="10"
+               direction-links="true"
+               boundary-links="true" >
+            </dir-pagination-controls>
+
+        </div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="addfriends" ng-controller="searchfriends">
+        <div class="container">
+            <h2>Buscador de amigos</h2>
+            <form class="form-inline">
+                <div class="form-group">
+                    <label>Buscador</label>
+                    <input type="text" ng-model="search" class="form-control" placeholder="Introduce el amigo a añadir">
+                </div>
+            </form>
+
+            <!--
+    <thead>
+        <tr>
+            <th ng-click="sort('id')">Id</th>
+            <th ng-click="sort('first_name')">First Name</th>
+            <th ng-click="sort('last_name')">Last Name</th>
+            <th ng-click="sort('hobby')">Hobby</th>
+        </tr>
+    </thead>
+    -->
+            <table id="posiblefriends" class="table-hover table-bordered table col-sm-12" >
+                <thead>
+                    <tr>
+                        <td ng-click="sort('username')">
+                            Usuario
+                            <span class="glyphicon sort-icon" ng-show="sortKey=='username'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                        </td>
+                        <td ng-click="sort('datefriends')">
+                            En tests4all desde
+                            <span class="glyphicon sort-icon" ng-show="sortKey=='datefriends'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                        </td>
+                        <td>Acciones</td>
+                    </tr>
+
+                </thead>
+                <tr dir-paginate="user in userstoadd|orderBy:sortKey:reverse|filter:search|itemsPerPage:10">
+                    <td>
+                        <a href="user/[[user.id]]">[[ user.username ]]</a>
+                    </td>
+                    <td>
+                        [[user.created_at]]
+                    </td>
+                    <td>
+                        <button data-iduser="[[user.id]]" class="addfriend btn accion btn-success" ng-click="sendFriendRequest(user.id)"><i class="fa fa-plus-square"></i> Añadir amigo</button>
+                    </td>
+                </tr>
+            </table>
+            <div ng-hide="userstoadd.length">Tienes agregados como amigos a todos los usuarios :D</div>
+            <dir-pagination-controls
+               max-size="10"
+               direction-links="true"
+               boundary-links="true" >
+            </dir-pagination-controls>
+
+        </div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="groups">
+        <div ng-hide="userstoadd.length">No estás en ningún grupo</div>
+        <a href="{% url 'testsforall:createGroup' %}" class="btn btn-success"><i class="fa fa-users"></i>Crear grupo</a>
+        
+    </div>
+  </div>
+  
+<div id="infoAjaxModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content col-xs-12">
+            <div class="modal-header col-xs-12">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Solicitud de amistad enviada</h4>
+            </div>
+            <div id="infoajax" class="modal-body text-center col-xs-12">
+            
+            </div>
+            <div class="modal-footer col-xs-12">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}

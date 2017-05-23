@@ -1,0 +1,38 @@
+{% load staticfiles %}{% load crispy_forms_tags %}
+<!DOCTYPE html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" href="/media/bft/Favicon.ico">
+    <title>{{pagetitle|default:"Brave Frontier Teams"}}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'testsforall/style.css' %}" />
+</head>
+
+<body>
+    <div class="container">
+
+        {% if messages %}
+        <ul class="messages messages-margin">
+            {% for message in messages %}
+            <li class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div class="container-fluid">
+            <h2>{{titulo|default:"Login"}}</h2>
+            <div class="row-form">
+                {% crispy form %}
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</body>
+
+</html>

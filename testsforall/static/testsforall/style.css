@@ -1,0 +1,269 @@
+body {
+    padding-top: 5em;
+    padding-bottom: 3em;
+}
+
+#div_id_username>div {
+    margin: 0 0 1em 0;
+}
+
+#div_id_password>div {
+    margin: 0 0 1em 0;
+}
+
+.messages-margin {
+    margin: 2em 0;
+}
+
+.messages {
+    list-style-type: none;
+}
+
+
+.modal-crear{
+    position: fixed;
+    left: 28%;
+}
+.clearfix{
+    margin-top: 10px;
+}
+
+#title{
+    padding: 1.5em;
+    font-size: 3em;
+}
+
+.titleinput{
+    border: none;
+    border-color: transparent;
+}
+
+.question{
+    padding: 1em;
+    border: 0.5px solid;
+}
+
+#endsurvey{
+    margin-top: 15px;
+}
+
+.nquestion{
+    margin-bottom: 2em;
+}
+
+.questiontitle{
+    font-size: 1.5em;
+}
+
+.answer{
+    margin: 0.5em;
+}
+
+label > input{ /* HIDE RADIO */
+  visibility: hidden; /* Makes input not-clickable */
+  position: absolute; /* Remove input from document flow */
+}
+label > input + img{ /* IMAGE STYLES */
+  cursor:pointer;
+  border:2px solid transparent;
+}
+label > input:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */
+  border:2px solid #f00;
+}
+
+.imageselection{
+    width: 100px;
+    height: auto;
+}
+
+.imgquestiontitlenotselected{
+    display: none;
+}
+
+.questiontitle{
+    margin-top: 5px;
+}
+
+.imagereduced{
+    width: 50%;
+    height: auto;
+}
+
+.answertext{
+    margin-top: 5px;
+}
+
+.buttonpublishedyes{
+    background-color: #04B404;
+}
+
+.buttonpublishedno{
+    background-color: #B40404;
+}
+
+#buttonpublished{
+    width: 45px;
+    border: solid 1px black;
+}
+
+#buttonpublished:hover{
+    cursor: pointer;
+}
+
+#stylebutton{
+    width: 50%;
+    background-color: white;
+    display: block;
+    text-align: center;
+    border-radius: 4px;
+    border: solid 1px black;
+    border-top-left-radius: 0;
+    border-top-right-radius: 5; 
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 5;
+}
+
+#answering{
+    text-align: center;
+}
+
+#preguntas{
+    align-self: flex-start;
+}
+
+#answering .answers{
+    padding-left: 1em;
+    text-align: left;
+}
+
+#answering .answer{
+    border: 1px solid black;
+    border-radius: 1em;
+    background: #FFFF00;
+}
+#answering .answer:hover{
+    background-color: #01DFA5;
+    cursor: pointer;
+}
+
+#answering .selected{
+    background-color: #01DFA5;
+}
+
+#answering .questionimg{
+    align-self: center;
+}
+
+#answering .img {
+    position: relative;
+    height: 15em;
+    width: auto;
+    background-position: 50% 50%;
+    background-repeat:   no-repeat;
+    background-size:     cover;
+}
+
+#survey{
+    text-align: left;
+}
+
+.accion{
+    margin-left: 0.5em;
+}
+
+#labelrules{
+    font-size: 0.7em !important;
+}
+
+#topublish{
+    display: none;
+}
+
+#mysurveys{
+    min-width: 110%;
+}
+
+.noteditable{
+    display: none!important;
+}
+
+#helpModalbtn{
+    position: fixed;
+    top: 10%;
+    left: 1%;
+}
+
+#viewsurveybtn{
+    position: fixed;
+    top: 10%;
+    left: 90%;
+}
+
+#help-edition-list li{
+    margin-top: 15px;
+}
+
+.answersanswering > .answer > img{
+    width: 75%!important;
+    height: auto!important;
+    margin: 10px!important;
+}
+
+.inner-addon { 
+    position: relative; 
+}
+
+/* style icon */
+.inner-addon .glyphicon {
+    position: absolute;
+    padding: 10px;
+    pointer-events: none;
+}
+
+.inner-addon .fa {
+    position: absolute;
+    padding: 10px;
+    pointer-events: none;
+}
+
+
+/* align icon */
+
+.left-addon .glyphicon {
+    left: 0px;
+}
+
+.right-addon .glyphicon {
+    right: 0px;
+}
+
+
+/* add padding  */
+
+.left-addon input {
+    padding-left: 30px;
+}
+
+.right-addon input {
+    padding-right: 30px;
+}
+
+#submitsignup{
+    margin: 1em;
+}
+
+.signupfield{
+    margin-top: 3em;
+}
+
+#friendsrequest{
+    float: right;
+}
+
+#selectsurvey{
+    margin-top:2em;
+}
+
+.deletequestion{
+    float:right;
+}

@@ -1,0 +1,42 @@
+from django.conf.urls import url
+
+from . import views
+from usuarios.views import views_signin, views_signup, views_checkuser, views_checkmail, views_confirmmail
+urlpatterns = [
+    url(r'^solvetest', views.solveTest, name = "solveTest"),
+    url(r'^getsurveystodo', views.getSurveysToDo, name = "getSurveysToDo"),
+    url(r'^surveystodo$', views.surveysToDo, name = "surveysToDo"),
+    url(r'^getmygroups', views.getMyGroups, name = "getMyGroups"),
+    url(r'^creategroup', views.createGroup, name = "createGroup"),
+    url(r'^user/(?P<idUser>[0-9]+)/', views.user, name = "user"),
+    url(r'^friendrequests', views.friendRequests, name = "friendRequests"),
+    url(r'^sendfriendrequest', views.sendFriendRequest, name = "sendFriendRequest"),
+    url(r'^acceptfriend', views.acceptFriend, name = "acceptFriend"),
+    url(r'^getusers$', views.getUsers, name = "getUsers"),
+    url(r'^getfriendrequests', views.getFriendRequests, name = "getFriendRequests"),
+    url(r'^getfriends$', views.getFriends, name = "getFriends"),
+    url(r'^social', views.social, name = "social"),
+    url(r'^confirmmail/(?P<hashlink>[a-fA-F\d]*)/(?P<userid>[0-9]+)', views_confirmmail, name="confirmmail"),
+    url(r'^checkmail$', views_checkmail, name="checkmail"),
+    url(r'^checkuser$', views_checkuser, name="checkuser"),
+    url(r'^saveanswer$', views.save_answer, name = "save_answer"),
+    url(r'^savequestion$', views.save_question, name = "save_question"),
+    url(r'^editsurvey/(?P<idSurvey>[0-9]+)/', views.edit_survey, name = "edit_survey"),
+    url(r'^publish/(?P<idSurvey>[0-9]+)/', views.publish_survey, name = "publish_survey"),
+    url(r'^getsurveys$', views.getSurveys, name = "getSurveys"),
+    url(r'^misencuestas$', views.mySurveys, name = "mySurveys"),
+    url(r'^deletesurvey/(?P<idSurvey>[0-9]+)/', views.deleteSurvey, name = "deleteSurvey"),
+    url(r'^survey/(?P<idSurvey>[0-9]+)/', views.survey, name = "survey"),
+    url(r'^$', views.index, name="index"),
+    url(r'^upload$', views.upload, name ='jfu_upload'),
+    url(r'^upload/(?P<idSurvey>[0-9]+)$', views.upload, name = 'jfu_upload_edit'),
+    url(r'^deleteupload/(?P<pk>\d+)$', views.upload_delete, name ='jfu_delete'),
+    url(r'^signin$', views_signin, name="signin"),
+    url(r'^signup$', views_signup, name="signup"),
+    url(r'^micuenta$', views.miCuenta, name='miCuenta'),
+    url(r'^creartest$', views.crearTest, name="crearTest"),
+    url(r'^crearencuesta$', views.crearEncuesta, name = "crearEncuesta"),
+    url(r'^logoutview$', views.logoutView, name = "logoutView"),
+    url(r'^home$', views.home, name = "home"),
+    
+]

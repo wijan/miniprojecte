@@ -1,0 +1,114 @@
+{% extends 'base.html' %}{% block content %}
+
+<script>
+var app = angular.module('mySurveys', ['angularUtils.directives.dirPagination']);
+    
+    app.config(function($interpolateProvider) {
+      $interpolateProvider.startSymbol('[[');
+      $interpolateProvider.endSymbol(']]');
+    });
+    
+    app.controller('surveys', function($scope, $http) {
+        $http({
+            method: 'GET',
+            url: 'http://miniprojecte-wijan.c9users.io/getsurveys'
+        }).then(function successCallback(response) {
+            // this callback will be called asynchronously
+            // when the response is available
+            $scope.surveys = response.data;
+        }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                alert(response);
+            
+        });
+        
+        $scope.sort = function(keyname){
+            $scope.sortKey = keyname;   //set the sortKey to the param passed
+            $scope.reverse = !$scope.reverse; //if true make it false and vice versa
+        };
+    
+    });
+    
+</script>
+<div class="container" ng-app="mySurveys">
+    <h2>Creadas</h2>
+    <form class="form-inline">
+        <div class="form-group">
+            <label >Buscador</label>
+            <input type="text" ng-model="search" class="form-control" placeholder="Introduce el título a buscar">
+        </div>
+    </form>
+    
+    <!--
+    <thead>
+        <tr>
+            <th ng-click="sort('id')">Id</th>
+            <th ng-click="sort('first_name')">First Name</th>
+            <th ng-click="sort('last_name')">Last Name</th>
+            <th ng-click="sort('hobby')">Hobby</th>
+        </tr>
+    </thead>
+    -->
+    <table id="mysurveys" class="table-hover table-bordered table col-sm-12" ng-controller="surveys">
+        <thead>
+            <tr>
+                <td ng-click="sort('title')">
+                    Título
+                    <span class="glyphicon sort-icon" ng-show="sortKey=='title'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                </td>
+                <td ng-click="sort('typesurvey')">
+                    Tipo
+                    <span class="glyphicon sort-icon" ng-show="sortKey=='typesurvey'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                </td>
+                <td ng-click="sort('created_at')">
+                    Fecha de creación
+                    <span class="glyphicon sort-icon" ng-show="sortKey=='created_at'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                </td>
+                <td ng-click="sort('last_edition')">
+                    <span class="glyphicon sort-icon" ng-show="sortKey=='last_edition'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                    Última edición
+                </td>
+                <td ng-click="sort('future_publication')">
+                    Fecha de publicación
+                    <span class="glyphicon sort-icon" ng-show="sortKey=='future_publication'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                </td>
+                <td>Acciones</td>
+            </tr>
+
+        </thead>
+        <tr dir-paginate="survey in surveys|orderBy:sortKey:reverse|filter:search|itemsPerPage:10">
+            <td>
+                <a href="survey/[[survey.id]]">[[ survey.title ]]</a>
+            </td>
+            <td>
+                [[survey.typesurvey]]
+            </td>
+            <td>
+                [[survey.created_at]]
+            </td>
+            <td>
+                [[survey.last_edition]]
+            </td>
+            <td>
+                [[survey.future_publication]]
+            </td>
+            <td>
+                <a class="btn accion btn-danger" href="deleteSurvey/[[survey.id]]"><i class="fa fa-trash"></i> Eliminar</button>
+                <a class="btn accion btn-info" href="editsurvey/[[survey.id]]"><i class="fa fa-pencil-square-o"></i> Editar</button>
+                <a ng-if="!survey.published" href="publish/[[survey.id]]" class="btn accion btn-success"><i class="fa fa-share-alt"></i> Publicar</a>
+                
+            </td>
+        </tr>
+
+    </table>
+    <dir-pagination-controls
+       max-size="10"
+       direction-links="true"
+       boundary-links="true" >
+    </dir-pagination-controls>
+
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,674 @@
+
+{% extends 'base.html' %}
+{% load jfutags %}
+{% block content %}
+<a href="#" id="helpModalbtn" data-toggle="modal" data-target="#helpModal" class="btn btn-info col-xs-1">
+    <i class="fa fa-info-circle"></i> Ayuda
+</a>
+<a href="{% url 'testsforall:survey' survey.id %}" id="viewsurveybtn" target="_blank" class="btn btn-info col-xs-1">
+    <i class="fa fa-eye"></i> Ver
+</a>
+<div class="container">
+    <h2>Editar encuesta</h2>
+    <h3>Añadir imagenes</h3>
+    <a href="#" data-toggle="modal" data-target="#imagesUploaderModal" class="btn btn-info col-xs-3">
+        <i class="fa fa-pencil"></i> Subir imágenes
+    </a>
+    <div class="container col-xs-12" id="surveydiv" data-surveyid="{{survey.id}}">
+        <form method="post">
+            <div class="hidden" id="editedquestions">
+                
+            </div>
+            <div class="hidden" id="deletedquestions">
+                
+            </div>
+            <div class="hidden" id="editedanswers">
+                
+            </div>
+            <div class="hidden" id="deletedanswers">
+                
+            </div>
+            {% csrf_token %}
+            <div id="title" class="col-xs-12">
+                <input type="hidden" name="totalquestions" id="totalquestions" value="{{survey.question_set.all.count}}">
+                <h2>Título</h2>
+                <i class="fa fa-pencil"></i> <input name="surveytitle" id="surveytitle" class="titleinput" size="30" type="text" value="{{survey.title}}">
+                <div class="clearfix"></div>
+                <h4 class="imgquestiontitlenotselected">Imágen seleccionada</h4>
+                <input type="hidden" id="inputimgsurvey" name="inputimgsurvey" value="{{survey.getFirstImage.id}}">
+                <a id="imgSurvey" href="#" target="_blank">
+                    <img class="surveyimg" src="/media/{{survey.getFirstImage.image}}">
+                </a>
+                <div class="clearfix"></div>
+                <a href="#" data-surveybutton="1" data-toggle="modal" data-target="#imagesSelectorModal" id="imageselectbtnsurvey" class="btn btn-info col-xs-7">
+                    <i class="fa fa-pencil"></i> Seleccionar imagen
+                </a>
+            </div>
+            <div class="col-xs-12" id="questionzone">
+                {% for question in survey.question_set.all %}
+                <div class="question oldquestion col-xs-10" data-nanswer="{{question.answer_set.all.count}}" data-nquestion="{{forloop.counter}}" data-idquestion="{{question.id}}">
+                    <input type="hidden" class="totalanswersquestion" id="totalanswers{{forloop.counter}}" name="totalanswers{{forloop.counter}}" value="{{question.answer_set.all.count}}">
+                    <button type="button" class="btn btn-danger deletequestion"><i class="fa fa-trash"></i> Eliminar pregunta</button>
+                    <button type="button" class="btn btn-info editquestion"><i class="fa fa-pencil-square-o"></i> Editar pregunta</button>
+                    <button type="button" class="btn btn-success collapse savequestion"><i class="fa fa-save"></i> Guardar pregunta</button>
+                    <span class="collapse adverticementsave"><i class="fa fa-arrow-left"></i> Recuerda guardar para efectuar los cambios</span>
+                    <span class="editable hidden" id="editabletext{{forloop.counter}}">Ahora puedes editar la pregunta, si no quieres hacer cambios, dejalo tal cual que se mantendrá</span>
+                    <h3 class="nquestion">Pregunta {{forloop.counter}}:</h3>
+                    <div class="clearfix"></div>
+                    <h4 class="imgquestiontitlenotselected">Imágen seleccionada</h4>
+                    <input type="hidden" name="inputimgquestion{{forloop.counter}}" id="inputimgquestion{{forloop.counter}}" value="{{question.image.id}}">
+                    <a id="imgQuestion{{forloop.counter}}" href="{% if question.image != None %}/media/{{question.image.image}}{% else %}#{% endif %}" target="_blank">
+                        <img class="questionimg" src="{% if question.image != None %}/media/{{question.image.image}}{% else %}{% endif %}">
+                    </a>
+                    
+                    <div class="clearfix"></div>
+                    <div>
+                        <a href="#" id="imageselectbtnquestion{{forloop.counter}}" data-questionbutton="{{forloop.counter}}" data-toggle="modal" data-target="#imagesSelectorModal" class="imageselectbtnquestion collapse btn btn-info col-xs-3">
+                            <i class="fa fa-pencil"></i> Seleccionar imagen
+                        </a>
+                    </div>
+                    <div class="clearfix"></div>
+                    <input id="tq{{forloop.counter}}" name="tq{{forloop.counter}}" class="titleinput questiontitle" type="text" size="60" value="{{question.title}}" disabled>
+                    <div class="clearfix"></div>
+                    {% for answer in question.answer_set.all %}
+                    <div data-idanswer="{{answer.id}}" data-nanswer="{{forloop.counter}}" class="answer oldanswer col-xs-5 {% if forloop.last or question.answer_set.all.count == 1 %}last_answer{% endif %}">
+                        <h4 class="answertitle">Respuesta {{forloop.counter}}:</h4>
+                        <h4 class="imgquestiontitlenotselected">Imágen seleccionada</h4>
+                        <input class="inputimganswer" type="hidden" id="inputimganswer{{forloop.parentloop.counter}}_{{forloop.counter}}" name="inputimganswer{{forloop.parentloop.counter}}_{{forloop.counter}}">
+                        <a id="imgAnswer{{forloop.parentloop.counter}}_{{forloop.counter}}" href="{% if question.image != None %}/media/{{question.image.image}}{% else %}#{% endif %}" target="_blank">
+                            <img class="answerimg {% if answer.image != None %}imagereduced{% endif %}" src="{% if answer.image != None %}/media/{{answer.image.image}}{% else %}{% endif %}">
+                        </a>
+                        <div class="clearfix"></div>
+                        <a href="#" data-answerbutton="{{forloop.parentloop.counter}}_{{forloop.counter}}" data-toggle="modal" data-target="#imagesSelectorModal" id="imageselectbtnanswer{{forloop.parentloop.counter}}_{{forloop.counter}}" class="imageselectbtnanswer collapse btn btn-info col-xs-7">
+                            <i class="fa fa-pencil"></i> Seleccionar imagen
+                        </a>
+                        <input id="answer{{forloop.parentloop.counter}}_{{forloop.counter}}" name="answer{{forloop.parentloop.counter}}_{{forloop.counter}}" type="text" class="col-xs-10 answertext" value="{{answer.title}}" disabled>
+                    </div>
+                    {% if forloop.counter|divisibleby:2 %}
+                    <div class="clearfix"></div>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    <button type="button" data-nquestion="{{forloop.counter}}" id="addanswer{{forloop.counter}}" class="addanswer collapse btn btn-success"><i class="fa fa-plus-square"></i> Añadir respuesta</button>
+                </div>
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="imagesUploaderModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content col-xs-12">
+            <div class="modal-header col-xs-12">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Subir imágenes</h4>
+            </div>
+            <div class="modal-body text-center col-xs-12">
+            {% jfu 'testsforall/upload.html' 'testsforall:jfu_upload'%}
+            </div>
+            <div class="modal-footer col-xs-12">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="helpModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content col-xs-12">
+            <div class="modal-header col-xs-12">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Ayuda edición</h4>
+            </div>
+            <div class="modal-body col-xs-12">
+                <ul id="help-edition-list">
+                    <li>
+                        Las preguntas se editan de forma independiente una de otra, y el test o encuesta también, así que sientete libre
+                        de editarlas cómo más te plazca y en el orden que desees.
+                    </li>
+                    <li>
+                        Para poder editar una pregunta debes pulsar el botón de "Editar pregunta", sino las cajas de texto y los
+                        selectores de imágenes estarán bloqueados.
+                    </li>
+                    <li>
+                        Una vez hayas hecho los cambios deberás apretar el botón "Guardar cambios", y apretar el botón de confirmación, 
+                        recuerda que una vez hayas apretado el botón de confirmación, no se podrán recuperar el estado anterior de 
+                        la pregunta.
+                    </li>
+                    <li>
+                        Para añadir una respuesta a una pregunta nueva deberás apretar el botón de añadir pregunta, y la respuesta si 
+                        deberá ser guardada.
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer col-xs-12">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="infoAjaxModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content col-xs-12">
+            <div class="modal-header col-xs-12">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-thumbs-up"></i> Guardado satisfactorio</h4>
+            </div>
+            <div class="modal-body col-xs-12">
+                <p id="infoajax"></p>
+            </div>
+            <div class="modal-footer col-xs-12">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="confirmSave" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content col-xs-12">
+            <div class="modal-header col-xs-12">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-save"></i> Confirmación de guardado</h4>
+            </div>
+            <div class="modal-body text-center col-xs-12">
+            Estás seguro de realizar los cambios?
+            </div>
+            <div class="modal-footer col-xs-12">
+                <button type="button" id="savechanges" class="btn btn-success" data-dismiss="modal"><i class="fa fa-save"></i> Sí</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-undo"></i> No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="imagesSelectorModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content col-xs-12">
+            <div class="modal-header col-xs-12">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Seleccionar imagen</h4>
+            </div>
+            <div class="modal-body text-center col-xs-12">
+                {% if images|length > 0 %}
+                <div id="selectImage" data-haveimg="1">
+                        {% for image in images %}
+                        <label id="label{{image.id}}" class="labelselect">
+                            <input type="radio" name="questionImages" value="{{ image.id }}">{{ image.id }}
+                            <img src = "/media/{{ image.image }}" class = "imageselection">
+                        </label>
+                        {% endfor %}
+                </div>
+                {% else %}
+                <div id="selectImage" data-haveimg="0">
+                    Aún no hay imágenes súbidas
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer col-xs-12">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+    $(document).ready(function() {
+        var questiontosave;
+        var typesave;
+        
+        $('.addanswer').each(function(){
+            $(this).click(function(){
+                addanswer($(this));    
+            });
+        });
+        
+        $('.imageselectbtnanswer').each(function(){
+            $(this).click(function(){
+                imgSelectionType = "answer";
+                answerImageSelector = $(this).data('answerbutton');
+                questionImageSelectorChange($(this).data('questionbutton'));
+            });
+        });
+            
+        
+        
+        
+        $('.imageselectbtnquestion').each(function(){
+            $(this).click(function(){
+                imgSelectionType = "question";
+                questionImageSelectorChange($(this).data('questionbutton'));
+            });
+        });
+        
+        
+        $('.editquestion').click(function(){
+            var idquestion = $(this).parent().data('idquestion');
+            var numquestion = $(this).parent().data('nquestion');
+            
+            $('#tq'+numquestion).prop('disabled', false);
+            
+            if(!$('#editedquestion'+idquestion).length){
+                var appendinput = '<input type="text" id="editedquestion'+idquestion+'" name="editedquestions" value="'+idquestion+'">'; 
+                
+                $('#editedquestions').append(appendinput);
+            }
+            
+            var answers = $(this).parent().find('.answer').each(function(){
+                $(this).find('.answertext').prop('disabled', false)
+                $(this).find('.imageselectbtnanswer').css('visibility','visible').hide().fadeIn().removeClass('hidden');
+            });
+            
+            
+            
+            var btnselectimg = $('#imageselectbtnquestion'+numquestion);
+            var btnsave = $(this).parent().find('.savequestion');
+            var adverticement = $(this).parent().find('.adverticementsave');
+            var addanswerbtn = $(this).parent().find('.addanswer');
+            btnselectimg.css('visibility','visible').hide().fadeIn().removeClass('hidden');
+            btnsave.css('visibility','visible').hide().fadeIn().removeClass('hidden');
+            adverticement.css('visibility','visible').hide().fadeIn().removeClass('hidden');
+            addanswerbtn.css('visibility','visible').hide().fadeIn().removeClass('hidden');
+        });
+        
+        
+        $('#savechanges').click(function(){
+            if(typesave == "question"){
+                var question = $('.question[data-nquestion="'+questiontosave+'"]')
+                question.find('input:text').prop('disabled', true);
+                question.find('.imageselectbtnquestion').fadeOut();
+                question.find('.imageselectbtnanswer').fadeOut();
+                question.find('.addanswer').fadeOut();
+                question.find('.adverticementsave').fadeOut();
+                $('.question[data-nquestion="'+questiontosave+'"]').find('.savequestion').fadeOut();
+                saveQuestion(question);
+            }
+            else{
+                
+            }
+        });
+        
+        
+        
+        $('.savequestion').click(function() {
+            typesave = "question";
+            questiontosave = $(this).parent().data('nquestion');
+            $('#confirmSave').modal('show');
+        });
+        
+        function saveQuestion(question) {
+            var nquestion = question.data('nquestion');
+            var titlequestion = question.find('.questiontitle').val();
+            var imagequestion = $('#inputimgquestion'+nquestion).val();
+            var token = $("input[name=csrfmiddlewaretoken]").val();
+            
+            question.find('.answer').each(function(){
+                saveAnswer($(this));
+            });
+            if (question.hasClass('oldquestion')) {
+                var idquestion = question.data('idquestion');
+                var returndata;
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'testsforall:save_question' %}",
+                    data: {
+                        'csrfmiddlewaretoken': token,
+                        'title': titlequestion,
+                        'idquestion': idquestion,
+                        'image': imagequestion
+                    },
+                    success: function(msg) {
+                        var info = "La pregunta "+nquestion+" ";
+                        returndata = msg[0].msg;
+                        $('#infoajax').text(info+returndata);
+                        $('#infoAjaxModal').modal('show');
+                        //alert(msg.msg);
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert('Ha habido algun problema al guardar la pregunta');
+                        console.log(xhr.status);
+                        console.log(thrownError);
+                    }
+                });
+            }
+            else{
+                var surveyid = $('#surveydiv').data('surveyid');
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'testsforall:save_question' %}",
+                    data: {
+                        'csrfmiddlewaretoken': token,
+                        'title': titlequestion,
+                        'image': imagequestion,
+                        'surveyid': surveyid
+                    },
+                    success: function(msg) {
+                        var info = "La pregunta "+nquestion+" ";
+                        returndata = msg[0].msg;
+                        alert(info+returndata);
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert('Ha habido algun problema al guardar la pregunta');
+                        console.log(xhr.status);
+                        console.log(thrownError);
+                    }
+                })
+            }
+        }
+        
+        function saveAnswer(answer){
+            var nquestion = answer.parent().data('nquestion');
+            var nanswer = answer.data('nanswer');
+            var titleanswer = answer.find('.answertext').val();
+            var imageanswer = answer.find('.inputimganswer').val();
+            var token = $("input[name=csrfmiddlewaretoken]").val();
+            if(answer.hasClass('oldanswer')){
+                var idanswer = answer.data('idanswer');
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'testsforall:save_answer' %}",
+                    data: {
+                        'csrfmiddlewaretoken': token,
+                        'title': titleanswer,
+                        'image': imageanswer,
+                        'idanswer': idanswer
+                    },
+                    success: function(msg){
+                        var info = "La respuesta "+nanswer+" de la pregunta "+nquestion+" ";
+                        returndata = msg[0].msg;
+                        console.log(info+returndata);
+                    },
+                    error: function(xhr, ajaxOptions, thrownError){
+                        alert('Ha habido algun problema al guardar la pregunta');
+                        console.log(xhr.status);
+                        console.log(thrownError);
+                    }
+                });
+            }
+            else{
+                var idquestion = answer.parent().data('idquestion');
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'testsforall:save_answer' %}",
+                    data: {
+                        'csrfmiddlewaretoken': token,
+                        'title': titleanswer,
+                        'image': imageanswer,
+                        'idquestion': idquestion
+                    },
+                    success: function(msg){
+                        var info = "La respuesta "+nanswer+" de la pregunta "+nquestion+" ";
+                        returndata = msg[0].msg;
+                        console.log(info+returndata);
+                    },
+                    error: function(xhr, ajaxOptions, thrownError){
+                        alert('Ha habido algun problema al guardar la pregunta');
+                        console.log(xhr.status);
+                        console.log(thrownError);
+                    }
+                });
+            }
+        }
+        
+        scaleImagesQuestions();
+        
+        function scaleImagesQuestions(){
+            var imagesQuestions = $('.questionimg');
+            /*
+            var menus = document.getElementsByClassName("style2");
+            for (var i = menus.length - 1; i >= 0; i--) {
+                menus[i].className = "style1";
+            }
+            */
+            
+            imagesQuestions.each(function() {
+                if ($(this).width() > $('.question').first().width() / 2) {
+                    $(this).addClass('imagereduced');
+                }
+            });
+        }
+        
+        
+        $('#datepicker').datepicker({
+        });
+        /* Inicialización en español para la extensión 'UI date picker' para jQuery. */
+        
+        
+        /* Traducido por Vester (xvester@gmail.com). */
+        
+        ( function( factory) {
+            if ( typeof define==="function" && define.amd) {
+                // AMD. Register as an anonymous module.
+                define( [ "../widgets/datepicker"], factory);
+            }
+            else {
+                // Browser globals
+                factory( jQuery.datepicker);
+            }
+        }
+        
+        ( function( datepicker) {
+            datepicker.regional.es= {
+                closeText: "Cerrar", prevText: "&#x3C;Ant", nextText: "Sig&#x3E;", currentText: "Hoy", monthNames: [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"], monthNamesShort: [ "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"], dayNames: [ "domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"], dayNamesShort: [ "dom", "lun", "mar", "mié", "jue", "vie", "sáb"], dayNamesMin: [ "D", "L", "M", "X", "J", "V", "S"], weekHeader: "Sm", dateFormat: "dd/mm/yy", firstDay: 1, isRTL: false, showMonthAfterYear: false, yearSuffix: ""
+            }
+            ;
+            datepicker.setDefaults( datepicker.regional.es);
+            return datepicker.regional.es;
+        }
+        
+        ));
+        
+        
+        $('#buttonpublished').click(function(){
+            var stylebutton = $('#stylebutton');
+            if($(this).hasClass('buttonpublishedno')){
+                $('#published').val('1');
+                $(this).removeClass('buttonpublishedno')
+                $(this).addClass('buttonpublishedyes')
+                
+                stylebutton.css('position', 'relative').animate({ left: $(this).width() - stylebutton.width(),
+                                                                borderTopLeftRadius: 5, 
+                                                                borderTopRightRadius: 0, 
+                                                                borderBottomLeftRadius: 5, 
+                                                                borderBottomRightRadius: 0
+                });
+                stylebutton.text('Sí');
+                $('#topublish').fadeIn();
+            }
+            else{
+                $('#published').val('0');
+                $(this).removeClass('buttonpublishedyes')
+                $(this).addClass('buttonpublishedno')
+                stylebutton.animate({ left:0, 
+                                        borderTopLeftRadius: 0, 
+                                        borderTopRightRadius: 5, 
+                                        borderBottomLeftRadius: 0, 
+                                        borderBottomRightRadius: 5});
+                stylebutton.text('No');
+                $('#topublish').fadeOut()
+            }
+        });
+        
+        
+        function questionImageSelectorChange(questionselection){
+            questionImageSelector = questionselection;
+        }
+        
+        $('#imageselectbtnsurvey').click(function(){
+            imgSelectionType = 'survey';
+            console.log(imgSelectionType);
+            questionImageSelectorChange($(this).data('surveybutton'));
+        });
+        
+        $('#imageselectbtnquestion1').click(function(){
+            imgSelectionType = 'question';
+            console.log(imgSelectionType);
+            questionImageSelectorChange($(this).data('questionbutton'));
+        });
+        
+        
+        
+    
+        
+        
+        $('.labelselect').click(function(){
+            changeImage($(this));
+        });
+        
+        
+        $('#addquestion').click(function(){
+            var nquestionstring = nquestion.toString();
+            var question = "<div class='question col-xs-10' data-nanswer='0'>"+
+                                "<input type='hidden' class='totalanswersquestion' id='totalanswers"+nquestionstring+"' name='totalanswers"+nquestionstring+"' value='0'>"+
+                                "<h3 class='nquestion'>Pregunta "+nquestionstring+":</h3>"+
+                                "<h4 class='imgquestiontitlenotselected'>Imágen seleccionada</h4>"+
+                                "<input type='hidden' id='inputimgquestion"+nquestionstring+"' name='inputimgquestion"+nquestionstring+"'>"+
+                                "<a id='imgQuestion"+nquestionstring+"' href='#'>"+
+                                "<img class='questionimg'>"+    
+                                "</a>"+ 
+                                "<div class='clearfix'></div>"+
+                                "<a href='#' data-questionbutton='"+nquestionstring+"' data-toggle='modal' data-target='#imagesSelectorModal' id='imageselectbtnquestion"+nquestionstring+"' class='btn btn-info col-xs-3'>"+
+                                "<i class='fa fa-pencil'></i> Seleccionar imagen"+
+                                "</a>"+
+                                "<div class='clearfix'></div>"+
+                                "<input id='tq"+nquestionstring+"' name='tq"+nquestionstring+"' class='titleinput questiontitle' type='text' size='60' placeholder='Título de la pregunta'>"+
+                                "<div class='clearfix'></div>"+
+                                "<button type='button' data-nquestion='"+nquestionstring+"' id='addanswer"+nquestionstring+"' class='addanswer btn btn-success'><i class='fa fa-plus-square'></i> Añadir respuesta</button>"+ 
+                            "</div>";
+            var questionzone = $('#questionzone');
+            questionzone.append(question);
+            nquestion++;
+            
+            $('#addanswer'+nquestionstring).click(function(){
+                addanswer($(this));
+                addedquestion = false;
+            });
+            
+            $('#imageselectbtnquestion'+nquestionstring).click(function(){
+                imgSelectionType = 'question';
+                console.log(imgSelectionType);
+                questionImageSelectorChange($(this).data('questionbutton'));
+            });
+            
+            $('#totalquestions').val(nquestion-1);
+        });
+        
+        /*
+        AL YA HABER CARGADO EL LISTENER PARA TODAS LAS PREGUNTAS NO NECESITO CARGAR EL PRIMERO
+        $('#addanswer1').click(function(event){
+            addanswer($(this));
+        });*/
+        
+        function addanswer(element){
+            var question = element.parent();
+            
+            var nanswer = question.data("nanswer");
+            nanswer++;
+            var toAppend;
+            if(nanswer == 1){
+                toAppend = element.siblings('.questiontitle');
+            }
+            else{
+                toAppend = element.siblings('.last_answer');
+                element.siblings('.last_answer').removeClass('last_answer');
+            }
+            var nquestion = element.data('nquestion');
+            var totalanswersinput = question.find('#totalanswers'+nquestion);
+            totalanswersinput.val(parseInt(totalanswersinput.val())+1);
+            answerhtml = '<div data-nanswer="'+nanswer+'" class="answer col-xs-5 last_answer">'+
+                    '<h4 class="answertitle">Respuesta '+nanswer+':</h4>'+
+                    '<h4 class="imgquestiontitlenotselected">Imágen seleccionada</h4>'+
+                                '<input type="hidden" id="inputimganswer'+nquestion+'_'+nanswer+'" name="inputimganswer'+nquestion+'_'+nanswer+'">'+
+                                '<a id="imgAnswer'+nquestion+'_'+nanswer+'" href="#">'+
+                                '<img class="answerimg">'+    
+                                '</a>'+ 
+                                '<div class="clearfix"></div>'+
+                                '<a href="#" data-answerbutton="'+nquestion+'_'+nanswer+'" data-toggle="modal" data-target="#imagesSelectorModal" id="imageselectbtnanswer'+nquestion+'_'+nanswer+'" class="btn btn-info col-xs-7">'+
+                                '<i class="fa fa-pencil"></i> Seleccionar imagen'+
+                                '</a>'+
+                    '<input id="answer'+nquestion+'_'+nanswer+'" name="answer'+nquestion+'_'+nanswer+'" type="text" class="col-xs-10 answertext">'+
+                '</div>';
+            if(nanswer%2==1){
+                toAppend.after('<div class="clearfix"></div>'+answerhtml);
+            }
+            else{
+                toAppend.after(answerhtml);
+            }
+            
+            question.data("nanswer", nanswer);
+            
+            $('#imageselectbtnanswer'+nquestion+'_'+nanswer).click(function(){
+                imgSelectionType = 'answer';
+                console.log(imgSelectionType);
+                answerImageSelector = nquestion+'_'+nanswer;
+                console.log(answerImageSelector);
+                questionImageSelectorChange($(this).data('questionbutton'));
+            });
+        }
+        
+        $(window).keydown(function(event){
+            if(event.keyCode == 13) {
+                event.preventDefault();
+                return false;
+            }
+        });
+    });
+    
+    var questionImageSelector = 0;
+    var imgSelectionType;
+    var answerImageSelector;
+    
+    
+    
+    function changeImage(element) {
+        var fileid = element.find('input').first().val();
+        var srcimg = element.find('img').attr('src');
+        console.log(fileid+', '+srcimg);
+        if (imgSelectionType == "question") {
+            var linkimg = $('#imgQuestion' + questionImageSelector);
+            linkimg.siblings('#inputimgquestion' + questionImageSelector).val(fileid);
+        }
+        else if(imgSelectionType == "answer") {
+            var linkimg = $('#imgAnswer'+answerImageSelector);
+            linkimg.siblings('#inputimganswer' + answerImageSelector).val(fileid);
+        }
+        else if(imgSelectionType == "survey") {
+            var linkimg = $('#imgSurvey');
+            linkimg.siblings('#inputimgsurvey').val(fileid);
+        }
+        var img = linkimg.find('img');
+        if (img.hasClass('imagereduced')) {
+            img.removeClass('imagereduced');
+        }
+        linkimg.attr('href', 'https://miniprojecte-wijan.c9users.io/' + srcimg).attr('target', '_blank').siblings('.imgquestiontitlenotselected').removeClass('imgquestiontitlenotselected');
+        img.attr('src', srcimg);
+        if (img.width() > $('.question').first().width() / 2) {
+            img.addClass('imagereduced');
+        }
+        
+    
+    }
+    
+    function finished (e, data) {
+        $.each(data.files, function (index, file) {
+        var fileid = $('#fileupload').find('.files').find('td').last().find('button').data('url').split('/').slice(-1);
+        var imgpath = $('#fileupload').find('.files').find('td').first().find('img').attr('src');
+        $('#selectImage').find('.labelselect').last().after(
+                "<label id='label"+fileid+"' class='labelselect'>"+
+                    "<input type='radio' name='questionImages' value='"+fileid+"'>"+fileid+
+                            "<img src = '"+imgpath+"' class = 'imageselection'>"+
+                        "</label>"
+            );
+        $('#label'+fileid).click(function(){
+            changeImage($(this));
+        })
+    });
+    }
+    
+    $('#fileupload')
+    .bind('fileuploadcompleted', finished);
+</script>
+{% endblock %}
